@@ -11,7 +11,9 @@ const router = express.Router();
 const defaultVision = (req,res) => {
   res.send('Server is up and running');
 };
-router.get('/', defaultVision);
+// router.get('/', defaultVision);
+
+app.get("/", defaultVision); 
 
 //const defaultRoute = require("./routes/defaultRoutes");
 //const userEmailRoutes = require("./routes/emailUsersRoutes");
@@ -51,6 +53,8 @@ app.use(express.urlencoded({ extended: true }));
 //app.use("/api", jwtVerifyRouter);
 //app.use("/api", loginVerifyRoute);
 //app.use("/api", socialUserRoute);
+
+module.exports = app;
 
 // Start the server (for local development)
 const PORT = process.env.PORT || 5000;
