@@ -208,6 +208,8 @@ app.get('/api/attendance', async (req, res) => {
     params.push(start_date);
   }
 
+  
+
   if (end_date) {
     paramCount++;
     query += ` AND date <= $${paramCount}`;
