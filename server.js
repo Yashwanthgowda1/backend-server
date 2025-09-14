@@ -35,7 +35,7 @@ const app = express();
  // credentials: true,
  // methods: ["GET", "POST", "OPTIONS"],
  // optionsSuccessStatus: 200, 
-}//;
+//};
 
 // Middleware
 app.use(cors(corsOptions));
