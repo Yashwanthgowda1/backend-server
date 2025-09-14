@@ -208,8 +208,6 @@ app.get('/api/attendance', async (req, res) => {
     params.push(start_date);
   }
 
-  
-
   if (end_date) {
     paramCount++;
     query += ` AND date <= $${paramCount}`;
@@ -337,9 +335,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Handle 404 for API routes specifically
-app.use('/api/*', (req, res) => {
-  res.status(404).json({ error: 'API endpoint not found' });
+// Handle 404 for all unmatched routes (MOVED TO END)
+app.use('*', (req, res) => {
+  res.status(404).json({ 
+    error: 'Route not found',
+    path: req.originalUrl,
+    message: 'The requested endpoint does not exist'
+  });
 });
 
 // ===================
@@ -348,15 +350,3 @@ app.use('/api/*', (req, res) => {
 
 // Export the Express app for Vercel
 module.exports = app;
-
-// Only listen when running locally
-if (require.main === module) {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log('🚀 ==========================================');
-    console.log(`📱 Server running on http://localhost:${PORT}`);
-    console.log(`🌐 External access: http://0.0.0.0:${PORT}`);
-    console.log(`🗄️  Database: PostgreSQL`);
-    console.log(`🔧 Environment: ${isDevelopment ? 'Development' : 'Production'}`);
-    console.log('🚀 ==========================================');
-  });
-}
