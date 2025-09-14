@@ -1,68 +1,3 @@
-// const express = require("express");
-// const cors = require("cors");
-// const path = require("path");
-// const cookieParser = require("cookie-parser");
-// //const connectDB = require("./config/db");
-// //require("dotenv").config();
-// //const defaultVision = require('../controllers/defaultController');
-// const router = express.Router();
-
-// // def controller
-// const defaultVision = (req,res) => {
-//   res.send('Server is up and running');
-// };
-// // router.get('/', defaultVision);
-
-
-
-// //const defaultRoute = require("./routes/defaultRoutes");
-// //const userEmailRoutes = require("./routes/emailUsersRoutes");
-// //const emailVerifyRoute = require("./routes/emailVerifyRoutes");
-// //const jwtVerifyRouter = require("./routes/jwtVerifyRouter");
-// //const loginVerifyRoute = require("./routes/loginVerifyRouter");
-// //const socialUserRoute = require("./routes/socialUsersRoutes");
-
-
-// // Initialize the app
-// const app = express();
-
-// app.get("/", defaultVision); 
-
-// // Connect to MongoDB
-// //connectDB().catch(error => {
-// //  console.error("Error connecting to MongoDB:", error);
-// //});
-
-// // Middleware
-// //const corsOptions = {
-//  // origin: ['https://dchalios.vercel.app','http://localhost:5173'],
-//  // credentials: true,
-//  // methods: ["GET", "POST", "OPTIONS"],
-//  // optionsSuccessStatus: 200, 
-// //};
-
-// // Middleware
-// //app.use(cors(corsOptions));
-// app.use(cookieParser());
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-// //app.use(express.static(path.join(__dirname, "public")));
-
-// // Routes
-// //app.use("/api", defaultRoute);
-// //app.use("/api", userEmailRoutes);
-// //app.use("/api", emailVerifyRoute);
-// //app.use("/api", jwtVerifyRouter);
-// //app.use("/api", loginVerifyRoute);
-// //app.use("/api", socialUserRoute);
-
-// module.exports = app;
-
-// // Start the server (for local development)
-// const PORT = process.env.PORT || 5000;
-// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-
 require('dotenv').config();
 
 const express = require('express');
@@ -82,10 +17,6 @@ console.log('Environment:', process.env.NODE_ENV);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve static files from React build (ALWAYS serve static files)
-const frontendPath = path.join(__dirname, '../attendance-tracker/dist');
-app.use(express.static(frontendPath));
 
 // PostgreSQL Database setup
 const pool = new Pool({
@@ -152,6 +83,15 @@ initializeDatabase_table().catch(console.error);
 // ===================
 // API Routes
 // ===================
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Attendance Tracker API is running!',
+    timestamp: new Date().toISOString(),
+    environment: isDevelopment ? 'development' : 'production'
+  });
+});
 
 // Get all employees
 app.get('/api/employees', async (req, res) => {
@@ -364,12 +304,8 @@ app.get('/api/attendance-range/:emp_id/:start_date/:end_date', async (req, res) 
   }
 });
 
-// ===================
-// Frontend Routes (Must be LAST)
-// ===================
-
 // Health check endpoint
-app.get('/health', async (req, res) => {
+app.get('/api/health', async (req, res) => {
   try {
     // Test database connection
     await pool.query('SELECT NOW()');
@@ -385,20 +321,6 @@ app.get('/health', async (req, res) => {
       timestamp: new Date().toISOString(),
       database: 'Disconnected',
       error: err.message
-    });
-  }
-});
-
-// Serve React app for ALL other routes (catch-all route)
-app.get('*', (req, res) => {
-  const indexPath = path.join(frontendPath, 'index.html');
-  
-  // Check if index.html exists
-  if (require('fs').existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    res.status(404).json({ 
-      error: 'Frontend not built. Please run: npm run build' 
     });
   }
 });
@@ -419,48 +341,20 @@ app.use('/api/*', (req, res) => {
 });
 
 // ===================
-// Graceful Shutdown
+// Export for Vercel
 // ===================
 
-process.on('SIGINT', async () => {
-  console.log('\nShutting down server gracefully...');
-  try {
-    await pool.end();
-    console.log('Database connection pool closed');
-  } catch (err) {
-    console.error('Error closing database pool:', err.message);
-  }
-  process.exit(0);
-});
+// Export the Express app for Vercel
+module.exports = app;
 
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM received, shutting down gracefully...');
-  try {
-    await pool.end();
-  } catch (err) {
-    console.error('Error closing database pool:', err.message);
-  }
-  process.exit(0);
-});
-
-// ===================
-// Start Server
-// ===================
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log('🚀 ==========================================');
-  console.log(`📱 Server running on http://localhost:${PORT}`);
-  console.log(`🌐 External access: http://0.0.0.0:${PORT}`);
-  console.log(`🗄️  Database: PostgreSQL`);
-  console.log(`📁 Frontend: ${frontendPath}`);
-  console.log(`🔧 Environment: ${isDevelopment ? 'Development' : 'Production'}`);
-  console.log('🚀 ==========================================');
-  
-  // Check if frontend build exists
-  if (!require('fs').existsSync(path.join(frontendPath, 'index.html'))) {
-    console.log('⚠️  WARNING: Frontend build not found!');
-    console.log('   Please run: npm run build');
-  }
-});
-
-
+// Only listen when running locally
+if (require.main === module) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log('🚀 ==========================================');
+    console.log(`📱 Server running on http://localhost:${PORT}`);
+    console.log(`🌐 External access: http://0.0.0.0:${PORT}`);
+    console.log(`🗄️  Database: PostgreSQL`);
+    console.log(`🔧 Environment: ${isDevelopment ? 'Development' : 'Production'}`);
+    console.log('🚀 ==========================================');
+  });
+}
