@@ -13,7 +13,7 @@ const defaultVision = (req,res) => {
 };
 // router.get('/', defaultVision);
 
-app.get("/", defaultVision); 
+
 
 //const defaultRoute = require("./routes/defaultRoutes");
 //const userEmailRoutes = require("./routes/emailUsersRoutes");
@@ -25,6 +25,8 @@ app.get("/", defaultVision);
 
 // Initialize the app
 const app = express();
+
+app.get("/", defaultVision); 
 
 // Connect to MongoDB
 //connectDB().catch(error => {
