@@ -4,7 +4,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 //const connectDB = require("./config/db");
 //require("dotenv").config();
-const defaultVision = require('../controllers/defaultController');
+//const defaultVision = require('../controllers/defaultController');
 const router = express.Router();
 
 // def controller
