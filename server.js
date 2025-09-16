@@ -20,7 +20,9 @@ const allowedOrigins = [
   "https://front-end-server-mz4as6cxr-yashwanths-projects-7a956bf7.vercel.app", // Your current frontend
   "front-end-server.vercel.app",
   process.env.FRONTEND_URL, // Production frontend from env
-  /https:\/\/.*\.vercel\.app$/ // Allow all Vercel deployments (temporary fix)
+  /https:\/\/.*\.vercel\.app$/, // Allow all Vercel deployments (temporary fix)
+  process.env.FRONTEND_DEV_URL,
+  process.env.FRONTEND_LOCAL_URL,
 ];
 
 // Debug: Check if environment variables are loaded
