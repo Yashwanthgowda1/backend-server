@@ -18,6 +18,7 @@ const allowedOrigins = [
   "http://localhost:5173", // Local Vite dev
   "http://localhost:3000", // Alternative local port
   "https://front-end-server-mz4as6cxr-yashwanths-projects-7a956bf7.vercel.app", // Your current frontend
+  "front-end-server.vercel.app",
   process.env.FRONTEND_URL, // Production frontend from env
   /https:\/\/.*\.vercel\.app$/ // Allow all Vercel deployments (temporary fix)
 ];
